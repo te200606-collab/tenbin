@@ -1,1 +1,159 @@
-<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>方程式天秤教材</title><style>body{font-family:sans-serif;background:#eef4ff;text-align:center}button,input,select{margin:4px;padding:8px}.area{display:flex;justify-content:center;gap:80px;margin-top:20px}.pan{width:280px;min-height:130px;background:#fff;border:3px solid #555;border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;justify-content:center}.item{font-size:34px;margin:4px;cursor:grab}.beam{width:700px;height:8px;background:#333;margin:25px auto;transform-origin:center;transition:.4s}.trash{width:140px;margin:20px auto;padding:15px;border:3px dashed red;border-radius:12px}.msg{font-size:22px;font-weight:bold}</style></head><body><h1>⚖️ 一元一次方程式 天秤教材</h1><div id="eq"></div><select id="mode"><option value="show">Aモード</option><option value="hide">Bモード</option></select><button onclick="newProblem()">新しい問題</button><button onclick="resetBoard()">リセット</button><button onclick="bothAdd1()">両辺に+1</button><button onclick="bothRemove1()">両辺から-1</button><button onclick="showAns()">答え</button><div id="info"></div><div id="beam" class="beam"></div><div class="area"><div id="left" class="pan" ondrop="drop(event)" ondragover="allow(event)"></div><div id="right" class="pan" ondrop="drop(event)" ondragover="allow(event)"></div></div><div id="trash" class="trash" ondrop="trashDrop(event)" ondragover="allow(event)">🗑️ ごみ箱</div><p>x=<input id="ans" type="number"><button onclick="check()">判定</button></p><div id="msg" class="msg"></div><script>let id=0,p={};function mk(t,v){let d=document.createElement('div');d.className='item';d.draggable=true;d.id='i'+(++id);d.dataset.v=v;d.textContent=t;d.ondragstart=e=>e.dataTransfer.setData('text',d.id);return d}function allow(e){e.preventDefault()}function drop(e){e.preventDefault();e.currentTarget.appendChild(document.getElementById(e.dataTransfer.getData('text')));upd()}function trashDrop(e){e.preventDefault();let x=document.getElementById(e.dataTransfer.getData('text'));if(x)x.remove();upd()}function sum(id){let s=0;document.querySelectorAll('#'+id+' .item').forEach(a=>s+=+a.dataset.v);return s}function upd(){let l=sum('left'),r=sum('right');beam.style.transform='rotate('+Math.max(-15,Math.min(15,(r-l)*2))+'deg)';msg.textContent=l==r?'✅つり合い':'⚠️つり合っていない'}function draw(){left.innerHTML='';right.innerHTML='';for(let i=0;i<p.a;i++)left.appendChild(mk('🎁',p.x));for(let i=0;i<p.b;i++)left.appendChild(mk('⚫',1));for(let i=0;i<p.c;i++)right.appendChild(mk('⚫',1));eq.textContent=`${p.a}x + ${p.b} = ${p.c}`;info.textContent=mode.value==='show'?`🎁の重さ=${p.x}`:'🎁の重さは秘密';upd()}function newProblem(){let x=1+Math.floor(Math.random()*5);let a=1+Math.floor(Math.random()*3);let b=1+Math.floor(Math.random()*5);let c=a*x+b;p={x,a,b,c};draw()}function resetBoard(){draw()}function bothAdd1(){left.appendChild(mk('⚫',1));right.appendChild(mk('⚫',1));p.b++;p.c++;eq.textContent=`${p.a}x + ${p.b} = ${p.c}`;upd()}function bothRemove1(){let l=left.querySelector('.item[data-v="1"]');let r=right.querySelector('.item[data-v="1"]');if(l&&r){l.remove();r.remove();p.b--;p.c--;eq.textContent=`${p.a}x + ${p.b} = ${p.c}`;upd();}}function check(){msg.textContent=(+ans.value===p.x)?'🎉正解！':'もう一度考えよう'}function showAns(){alert('x='+p.x)}newProblem();</script></body></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>方程式天秤教材 上皿版</title>
+
+<style>
+body{
+    font-family:sans-serif;
+    background:#eef4ff;
+    text-align:center;
+}
+
+button,input,select{
+    margin:4px;
+    padding:8px;
+}
+
+.area{
+    display:flex;
+    justify-content:center;
+    gap:100px;
+    margin-top:20px;
+}
+
+.pan{
+    width:280px;
+    min-height:130px;
+    background:#fff;
+    border:4px solid #555;
+    padding:8px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+}
+
+.item{
+    font-size:34px;
+    margin:4px;
+    cursor:grab;
+}
+
+.beam{
+    width:750px;
+    height:10px;
+    background:#333;
+    margin:10px auto 0;
+    transform-origin:center;
+    transition:.4s;
+}
+
+.pivot{
+    font-size:60px;
+    line-height:1;
+}
+
+.trash{
+    width:140px;
+    margin:20px auto;
+    padding:15px;
+    border:3px dashed red;
+    border-radius:12px;
+}
+
+.msg{
+    font-size:22px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚖️ 一元一次方程式 天秤教材</h1>
+
+<div id="eq"></div>
+
+<select id="mode">
+    <option value="show">Aモード</option>
+    <option value="hide">Bモード</option>
+</select>
+
+<button onclick="newProblem()">新しい問題</button>
+<button onclick="resetBoard()">リセット</button>
+<button onclick="bothAdd1()">両辺に+1</button>
+<button onclick="bothRemove1()">両辺から-1</button>
+<button onclick="showAns()">答え</button>
+
+<div id="info"></div>
+
+<div class="area">
+
+    <div id="left"
+         class="pan"
+         ondrop="drop(event)"
+         ondragover="allow(event)">
+    </div>
+
+    <div id="right"
+         class="pan"
+         ondrop="drop(event)"
+         ondragover="allow(event)">
+    </div>
+
+</div>
+
+<div id="beam" class="beam"></div>
+
+<div class="pivot">△</div>
+
+<div id="trash"
+     class="trash"
+     ondrop="trashDrop(event)"
+     ondragover="allow(event)">
+🗑️ ごみ箱
+</div>
+
+<p>
+x=
+<input id="ans" type="number">
+<button onclick="check()">判定</button>
+</p>
+
+<div id="msg" class="msg"></div>
+
+<script>
+
+let id=0;
+let p={};
+
+function mk(t,v){
+
+    let d=document.createElement("div");
+
+    d.className="item";
+    d.draggable=true;
+    d.id="i"+(++id);
+    d.dataset.v=v;
+
+    d.textContent=t;
+
+    d.ondragstart=e=>
+        e.dataTransfer.setData("text",d.id);
+
+    return d;
+}
+
+function allow(e){
+    e.preventDefault();
+}
+
+function drop(e){
+
+    e.preventDefault();
+
+    e.currentTarget.appendChild(
+       
